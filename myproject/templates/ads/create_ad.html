@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}
+    {% if object %}Редактировать{% else %}Создать{% endif %} объявление
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-3xl mx-auto mt-10 p-6 bg-gray-800 rounded-xl shadow-lg fade-in">
+    
+    <h1 class="text-2xl font-bold mb-6">
+        {% if object %}Редактировать{% else %}Создать{% endif %} объявление
+    </h1>
+
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="bg-green-600 text-white px-4 py-2 rounded mb-2">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {{ form.media }}
+
+        {% for field in form %}
+            <div class="flex flex-col">
+                <label for="{{ field.id_for_label }}" class="mb-1 font-semibold text-gray-200">{{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}</label>
+                {{ field|add_class:"bg-gray-700 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                {% if field.help_text %}
+                    <small class="text-gray-400 mt-1">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <span class="text-red-500 text-sm mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="flex gap-4 mt-6">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded transition btn-main">
+                Сохранить
+            </button>
+            <a href="{% url 'home' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded transition btn-main">
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

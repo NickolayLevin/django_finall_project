@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Отправить отклик{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-10 bg-gray-800 p-8 rounded-lg shadow-lg">
+
+    {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="px-4 py-2 rounded
+                    {% if message.tags == 'error' %}bg-red-600 text-white{% endif %}
+                    {% if message.tags == 'success' %}bg-green-600 text-white{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <h2 class="text-2xl font-bold text-white mb-6">
+        Отклик на объявление: <span class="text-blue-400">“{{ advertisement.title }}”</span>
+    </h2>
+    <p class="text-gray-400 mb-4">Автор: {{ advertisement.author.email }}</p>
+
+    <div class="mb-6 p-4 bg-gray-700 rounded text-gray-100">
+        <strong>Текст объявления:</strong>
+        <div class="mt-2">
+            {{ advertisement.content|safe|truncatechars_html:300 }}
+            {% if advertisement.content|length > 300 %}
+                <a href="{% url 'ads_detail' advertisement.pk %}" class="text-blue-400 hover:underline">… читать полностью</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="flex flex-col">
+                <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-white">
+                    {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+                </label>
+                
+                {% if field.widget.input_type == "checkbox" %}
+                    {{ field }}
+                {% else %}
+                    <input type="{{ field.field.widget.input_type }}"
+                           name="{{ field.name }}"
+                           id="{{ field.id_for_label }}"
+                           value="{{ field.value|default_if_none:'' }}"
+                           class="bg-gray-700 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           {% if field.field.required %} required{% endif %}>
+                {% endif %}
+
+                {% if field.help_text %}
+                    <small class="text-gray-400 mt-1">{{ field.help_text }}</small>
+                {% endif %}
+
+                {% for error in field.errors %}
+                    <span class="text-red-500 text-sm mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="flex gap-4 mt-4">
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-semibold transition">
+                Отправить отклик
+            </button>
+            <a href="{% url 'ads_detail' advertisement.pk %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition">
+                Отмена
+            </a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

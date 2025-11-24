@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Выход из системы{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto my-20 bg-gray-800 p-8 rounded-lg shadow-lg text-white">
+
+    <h2 class="text-2xl font-bold mb-4">Выход из системы</h2>
+
+    <p class="mb-6 text-gray-300">
+        Вы уверены, что хотите выйти? После выхода вы потеряете доступ к созданию/редактированию объявлений, откликам и приватной странице.
+    </p>
+
+    <form method="post" action="{% url 'logout' %}" class="flex gap-4">
+        {% csrf_token %}
+        <button type="submit" class="bg-red-600 hover:bg-red-700 px-6 py-2 rounded text-white font-semibold transition">
+            Да, выйти
+        </button>
+        <a href="{% url 'home' %}" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded text-white transition">
+            Отмена
+        </a>
+    </form>
+
+</div>
+{% endblock %}

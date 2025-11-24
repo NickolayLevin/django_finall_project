@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Доска объявлений{% endblock %}
+
+{% block content %}
+
+
+<div class="bg-gray-800 p-5 rounded-lg mb-8 fade-in delay-1 shadow-lg">
+    <form method="get" class="flex items-end gap-4">
+        <div>
+            <label class="block text-sm mb-1">Категория</label>
+            <select name="category" class="bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white">
+                <option value="">Все категории</option>
+                {% for value, label in categories %}
+                    <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded btn-main">
+            Фильтр
+        </button>
+
+        {% if request.GET.category %}
+            <a href="{% url 'home' %}" class="text-gray-400 hover:text-white underline">
+                сбросить
+            </a>
+        {% endif %}
+    </form>
+</div>
+
+
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in delay-2">
+
+    {% for ad in object_list %}
+        <a href="{% url 'ads_detail' ad.pk %}"
+           class="ad-card block bg-gray-800 p-5 rounded-lg shadow hover:shadow-xl hover:-translate-y-1 transition">
+
+            <h2 class="text-xl font-semibold mb-2">{{ ad.title }}</h2>
+
+            <p class="text-sm text-gray-400 mb-3">
+                Категория: <b>{{ ad.get_category_display }}</b>
+            </p>
+
+            <div class="text-gray-400 text-sm flex justify-between">
+                <span>👀 {{ ad.views_count }}</span>
+                <span>❤️ {{ ad.likes_count }}</span>    
+            </div>
+        </a>
+    {% empty %}
+        <p class="col-span-full text-center text-gray-400">
+            Пока нет объявлений.
+        </p>
+    {% endfor %}
+
+</div>
+
+
+{% if is_paginated %}
+    <div class="flex justify-center mt-10 fade-in delay-3">
+        <div class="flex gap-3">
+
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}"
+                   class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded transition btn-main">
+                    ← Предыдущая
+                </a>
+            {% endif %}
+
+            <span class="px-4 py-2 bg-gray-700 rounded">
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}"
+                   class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded transition btn-main">
+                    Следующая →
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endif %}
+
+
+{% if user.is_authenticated %}
+    <div class="text-center mt-12 flex justify-center gap-4 scale-up">
+        <a href="{% url 'ads_create' %}"
+           class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded text-white font-semibold transition shadow btn-main glow">
+            Создать объявление
+        </a>
+
+        <a href="{% url 'my_responses' %}"
+           class="bg-yellow-600 hover:bg-yellow-700 px-6 py-3 rounded text-white font-semibold transition shadow btn-main glow">
+            Мои отклики
+        </a>
+    </div>
+{% endif %}
+
+
+{% endblock %}

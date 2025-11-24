@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto my-20 bg-gray-800 p-8 rounded-lg shadow-lg text-white">
+
+    <h2 class="text-2xl font-bold mb-6">Регистрация</h2>
+
+    {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+                <div class="px-4 py-2 rounded mb-2
+                    {% if message.tags == 'error' %}bg-red-600 text-white{% endif %}
+                    {% if message.tags == 'success' %}bg-green-600 text-white{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="flex flex-col">
+                <label for="{{ field.id_for_label }}" class="mb-2 font-semibold">
+                    {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+                </label>
+                
+                {% if field.widget.input_type == "checkbox" %}
+                    {{ field }}
+                {% else %}
+                    {{ field|add_class:"bg-gray-700 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                {% endif %}
+                
+                {% if field.help_text %}
+                    <small class="text-gray-400 mt-1">{{ field.help_text }}</small>
+                {% endif %}
+                
+                {% for error in field.errors %}
+                    <span class="text-red-500 text-sm mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white font-semibold transition">
+            Зарегистрироваться
+        </button>
+
+    </form>
+
+    <p class="mt-4 text-gray-400">
+        Уже есть аккаунт? <a href="{% url 'login' %}" class="text-blue-500 hover:underline">Войти</a>
+    </p>
+
+</div>
+{% endblock %}

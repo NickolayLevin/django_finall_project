@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Мои отклики{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-10 p-6 bg-gray-800 rounded-xl shadow-lg fade-in">
+
+    <h2 class="text-2xl font-bold mb-6 text-white">Мои отклики ({{ responses.count }})</h2>
+
+
+    <form method="get" class="mb-6 flex items-center gap-4">
+        <label for="ad" class="text-gray-200 font-medium">Фильтр по объявлению:</label>
+        <select name="ad" id="ad"
+                class="bg-gray-700 border border-gray-600 text-white rounded px-3 py-2"
+                onchange="this.form.submit()">
+            <option value="">Все объявления</option>
+            {% for ad in ads %}
+                <option value="{{ ad.pk }}"
+                    {% if ad_filter == ad.pk|stringformat:"s" %}selected{% endif %}>
+                    {{ ad.title }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <!-- Список откликов -->
+    <div class="space-y-4">
+        {% for r in responses %}
+            <div class="p-4 bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition">
+                <p class="text-gray-300 mb-2">
+                    <strong>{{ r.advertisement.title }}</strong> от <b>{{ r.author.email }}</b> 
+                    ({{ r.created_at|date:"d.m.Y H:i" }})
+                </p>
+                <p class="text-gray-100 mb-3">{{ r.text }}</p>
+
+                <div class="flex gap-3 flex-wrap">
+                    <form method="post" action="{% url 'response_accept' r.pk %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="px-4 py-2 rounded-lg font-semibold text-white transition
+                                {% if r.is_accepted %}
+                                    bg-green-600 cursor-not-allowed opacity-70
+                                {% else %}
+                                    bg-blue-600 hover:bg-blue-700
+                                {% endif %}">
+                            {% if r.is_accepted %}Принят{% else %}Принять{% endif %}
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'response_delete' r.pk %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                onclick="return confirm('Удалить отклик?')"
+                                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-gray-400 text-center">Пока нет откликов</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

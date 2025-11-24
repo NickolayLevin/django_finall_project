@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Редактировать объявление{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto my-10 bg-gray-800 p-8 rounded-lg shadow-lg">
+
+    <h2 class="text-2xl font-bold text-white mb-6">
+        Редактировать объявление
+    </h2>
+
+    {% if messages %}
+        <div class="mb-6">
+            {% for message in messages %}
+                <div class="px-4 py-2 rounded mb-2 
+                            {% if message.tags == 'error' %}bg-red-600 text-white{% endif %}
+                            {% if message.tags == 'success' %}bg-green-600 text-white{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        {{ form.media }} 
+
+        {% for field in form %}
+            <div class="flex flex-col">
+                <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-white">
+                    {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+                </label>
+
+
+                {{ field|add_class:"bg-gray-700 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+
+                {% if field.help_text %}
+                    <small class="text-gray-400 mt-1">{{ field.help_text }}</small>
+                {% endif %}
+
+                {% for error in field.errors %}
+                    <span class="text-red-500 text-sm mt-1">{{ error }}</span>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="flex gap-4 mt-6">
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded text-white font-semibold transition">
+                Сохранить
+            </button>
+            <a href="{% url 'ads_detail' object.pk %}" class="bg-gray-600 hover:bg-gray-700 px-6 py-2 rounded text-white transition">
+                Отмена
+            </a>
+        </div>
+    </form>
+
+</div>
+{% endblock %}
